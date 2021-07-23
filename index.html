@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Socket.IO chat</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font: 13px Helvetica, Arial; background: #f5f5f5;}
+      #form { position: absolute; bottom: 0; width: 100%;  border-top: 1px solid #999; }
+      #form input {border:none; outline: none; width: 90%; height:80px;padding: 10px;}
+      #sendBtn { width: 10%; height:80px; background: rgb(130, 224, 255); border: none; padding: 10px; float: right; cursor: pointer;}
+      #msg { list-style-type: none; margin: 0; padding: 0; }
+      #msg li { padding: 5px 10px; }
+      .con{text-align: left;}
+      .con:nth-child(odd) { text-align: right;}
+      .gray{color: #999;}
+      .center{text-align: center;}
+      .main{
+        width: 800px;
+        height: 500px;
+        margin: 0 auto;
+        background: #fff;
+        border: 3px solid #06b;
+        position: relative;
+      }
+    </style>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+  </head>
+  <body>
+    <script>
+      window.onload = function () {
+      var socket = io();
+
+      function showMsg(str,type){
+        var div  = document.createElement('div');
+        div.innerHTML = str;
+        if(type == "enter"){
+          div.style.color = 'blue';
+        }else if(type == "leave"){
+          div.style.color = "red";
+        }
+        document.body.appendChild(div);
+      }
+
+      //发送消息
+      $('.count').on('click' , function(){
+        alert(1);
+        });
+
+      $('#sendBtn').on('click',function(){
+        var msg = $('#sendText');
+        if(msg){
+          socket.emit('message', msg.val());
+          msg.val('');
+        }
+      })
+    
+      var li = '';
+      socket.on("enter",function(data){
+        li = '<li class="gray center">'+data+'</li>'
+        $('#msg').append(li);
+      });
+
+      socket.on("message",function(data){
+        li = '<li class="con">'+data+'</li>'
+        $('#msg').append(li);
+      })
+
+      socket.on("leave",function(data){
+        console.log(data)
+      })
+    }
+    </script>
+    <div class="main">
+    <ul id="msg"></ul>
+    <div id="form">
+      <input type="text" id="sendText" />
+      <button id="sendBtn">Send</button>
+    </div>
+  </div>
+  </body>
+</html>
